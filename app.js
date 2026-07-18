@@ -1122,21 +1122,18 @@ async function deleteMessage() {
   console.log('deleteMessage: msgId =', msgId, 'currentUserId =', currentUserId);
   if (!msgId) { showToast('Cannot find message ID'); return; }
   try {
-    const res = await sb.client.from('messages').delete().eq('id', msgId).select();
-    console.log('deleteMessage: raw result', res);
-    if (res.error) { showToast('Delete error: ' + res.error.message); return; }
-    if (!res.data || res.data.length === 0) {
-      showToast('Message not found or already deleted');
+    // Debug: check who owns this message
+    const { data: msgCheck } = await sb.client.from('messages').select('id, sender_id').eq('id', msgId).maybeSingle();
+    console.log('deleteMessage: msg owner check', msgCheck);
+    if (msgCheck) {
+      showToast('Msg sender_id: ' + msgCheck.sender_id + ' | My ID: ' + currentUserId);
+    } else {
+      showToast('Message not found in DB — already deleted?');
       target.remove();
       closeContextMenu();
       return;
     }
-    console.log('deleteMessage: deleted', res.data.length, 'row(s)');
-  } catch (e) { console.error('Delete message failed:', e); showToast('Delete failed: ' + e.message); return; }
-  target.style.opacity = '0.3';
-  target.style.transition = 'opacity 0.3s';
-  closeContextMenu();
-  setTimeout(() => target.remove(), 300);
+  } catch (e) { console.error('Delete debug failed:', e); showToast('Debug error: ' + e.message); }
 }
 
 document.addEventListener('click', function(e) {
