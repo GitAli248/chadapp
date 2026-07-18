@@ -1034,10 +1034,11 @@ function openContextMenu(element) {
   activeContextTarget = element.closest('.message');
   const menu = document.createElement('div');
   menu.className = 'message-context-menu active';
+  const isOwn = activeContextTarget.classList.contains('sent');
   menu.innerHTML = `
     <div class="context-menu-item" onclick="replyToMessage()"><i class="fas fa-reply"></i> Reply</div>
     <div class="context-menu-item" onclick="forwardMessage()"><i class="fas fa-share"></i> Forward</div>
-    <div class="context-menu-item danger" onclick="deleteMessage()"><i class="fas fa-trash"></i> Delete</div>
+    ${isOwn ? '<div class="context-menu-item danger" onclick="deleteMessage()"><i class="fas fa-trash"></i> Delete</div>' : ''}
   `;
   const rect = element.getBoundingClientRect();
   const container = document.querySelector('.phone-container').getBoundingClientRect();
@@ -1119,21 +1120,19 @@ async function deleteMessage() {
   if (!activeContextTarget) return;
   const target = activeContextTarget;
   const msgId = target.dataset.msgId;
-  console.log('deleteMessage: msgId =', msgId, 'currentUserId =', currentUserId);
   if (!msgId) { showToast('Cannot find message ID'); return; }
   try {
-    // Debug: check who owns this message
-    const { data: msgCheck } = await sb.client.from('messages').select('id, sender_id').eq('id', msgId).maybeSingle();
-    console.log('deleteMessage: msg owner check', msgCheck);
-    if (msgCheck) {
-      showToast('Msg sender_id: ' + msgCheck.sender_id + ' | My ID: ' + currentUserId);
-    } else {
-      showToast('Message not found in DB — already deleted?');
-      target.remove();
-      closeContextMenu();
+    const res = await sb.client.from('messages').delete().eq('id', msgId).eq('sender_id', currentUserId).select();
+    if (res.error) { showToast('Delete error: ' + res.error.message); return; }
+    if (!res.data || res.data.length === 0) {
+      showToast('Cannot delete this message');
       return;
     }
-  } catch (e) { console.error('Delete debug failed:', e); showToast('Debug error: ' + e.message); }
+  } catch (e) { showToast('Delete failed: ' + e.message); return; }
+  target.style.opacity = '0.3';
+  target.style.transition = 'opacity 0.3s';
+  closeContextMenu();
+  setTimeout(() => target.remove(), 300);
 }
 
 document.addEventListener('click', function(e) {
