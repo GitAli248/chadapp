@@ -1527,21 +1527,15 @@ async function deleteAccount() {
 // ====== ACTIVE SESSIONS (cross-tab device tracking) ======
 function getDeviceInfo() {
   const ua = navigator.userAgent;
-  let deviceName = 'Unknown Device';
-  let browser = 'Unknown Browser';
+  let platform = 'Unknown';
   let icon = 'fa-laptop';
-  if (/windows/i.test(ua)) { deviceName = 'Windows PC'; icon = 'fa-laptop'; }
-  else if (/macintosh|mac os x/i.test(ua)) { deviceName = 'Mac'; icon = 'fa-laptop'; }
-  else if (/linux/i.test(ua) && !/android/i.test(ua)) { deviceName = 'Linux PC'; icon = 'fa-laptop'; }
-  else if (/iphone/i.test(ua)) { deviceName = 'iPhone'; icon = 'fa-mobile-alt'; }
-  else if (/ipad/i.test(ua)) { deviceName = 'iPad'; icon = 'fa-tablet-alt'; }
-  else if (/android/i.test(ua)) { deviceName = /mobile/i.test(ua) ? 'Android Phone' : 'Android Tablet'; icon = /mobile/i.test(ua) ? 'fa-mobile-alt' : 'fa-tablet-alt'; }
-  if (/chrome/i.test(ua) && !/edg/i.test(ua)) browser = 'Chrome';
-  else if (/edg/i.test(ua)) browser = 'Edge';
-  else if (/firefox/i.test(ua)) browser = 'Firefox';
-  else if (/safari/i.test(ua)) browser = 'Safari';
-  else if (/opera|opr/i.test(ua)) browser = 'Opera';
-  return { deviceName, browser, icon };
+  if (/windows/i.test(ua)) { platform = 'Windows'; icon = 'fa-laptop'; }
+  else if (/macintosh|mac os x/i.test(ua)) { platform = 'macOS'; icon = 'fa-laptop'; }
+  else if (/linux/i.test(ua) && !/android/i.test(ua)) { platform = 'Linux'; icon = 'fa-laptop'; }
+  else if (/iphone/i.test(ua)) { platform = 'iOS'; icon = 'fa-mobile-alt'; }
+  else if (/ipad/i.test(ua)) { platform = 'iOS'; icon = 'fa-tablet-alt'; }
+  else if (/android/i.test(ua)) { platform = 'Android'; icon = /mobile/i.test(ua) ? 'fa-mobile-alt' : 'fa-tablet-alt'; }
+  return { platform, icon };
 }
 
 function getActiveSessions() {
@@ -1563,7 +1557,7 @@ function registerCurrentSession() {
   localStorage.setItem('chadapp_my_session', sessionId);
   const info = getDeviceInfo();
   const sessions = getActiveSessions().filter(s => s.id !== sessionId);
-  sessions.push({ id: sessionId, deviceName: info.deviceName, browser: info.browser, icon: info.icon, lastActive: Date.now() });
+  sessions.push({ id: sessionId, platform: info.platform, icon: info.icon, lastActive: Date.now() });
   saveActiveSessions(sessions);
   // Presence is handled automatically by Supabase via local-db.js
 }
@@ -1589,12 +1583,13 @@ function renderActiveDevices() {
   container.innerHTML = sessions.map(s => {
     const isCurrent = s.id === sessionId;
     const timeAgo = isCurrent ? 'Current session' : formatTimeAgo(s.lastActive);
+    const name = s.platform || s.deviceName || 'Unknown';
     return `
       <div class="device-item ${isCurrent ? 'current' : ''}">
         <div class="device-icon"><i class="fas ${s.icon}"></i></div>
         <div class="device-info">
-          <span class="device-name">${s.deviceName}</span>
-          <span class="device-detail">${s.browser} • ${timeAgo}</span>
+          <span class="device-name">${name}</span>
+          <span class="device-detail">${timeAgo}</span>
         </div>
         ${isCurrent ? '<span class="device-current-badge">Current</span>' : `<button class="device-logout-btn" onclick="logoutSession('${s.id}')">Log Out</button>`}
       </div>`;
@@ -1718,7 +1713,6 @@ const translations = {
     'menu.favorites': 'Favorites',
     'menu.messages': 'Messages',
     'menu.settings': 'Settings',
-    'menu.notifications': 'Notifications',
     'menu.footer': 'Stay connected with your loved ones. Chat anytime, anywhere with Chadapp.',
     'nav.home': 'Home',
     'nav.favorite': 'Favorite',
@@ -1732,7 +1726,6 @@ const translations = {
     'settings.privacy': 'Privacy',
     'settings.security': 'Security',
     'settings.darkmode': 'Dark Mode',
-    'settings.notifications': 'Notifications',
     'settings.language': 'Language',
     'settings.help': 'Help Center',
     'settings.about': 'About',
@@ -1763,7 +1756,6 @@ const translations = {
     'menu.favorites': 'Favoritos',
     'menu.messages': 'Mensajes',
     'menu.settings': 'Ajustes',
-    'menu.notifications': 'Notificaciones',
     'menu.footer': 'Mantente conectado con tus seres queridos. Chatea cuando quieras, donde quieras con Chadapp.',
     'nav.home': 'Inicio',
     'nav.favorite': 'Favorito',
@@ -1777,7 +1769,6 @@ const translations = {
     'settings.privacy': 'Privacidad',
     'settings.security': 'Seguridad',
     'settings.darkmode': 'Modo Oscuro',
-    'settings.notifications': 'Notificaciones',
     'settings.language': 'Idioma',
     'settings.help': 'Centro de Ayuda',
     'settings.about': 'Acerca de',
@@ -1808,7 +1799,6 @@ const translations = {
     'menu.favorites': 'पसंदीदा',
     'menu.messages': 'संदेश',
     'menu.settings': 'सेटिंग्स',
-    'menu.notifications': 'सूचनाएं',
     'menu.footer': 'अपने प्रियजनों से जुड़े रहें। चैडैप के साथ कभी भी, कहीं भी चैट करें।',
     'nav.home': 'होम',
     'nav.favorite': 'पसंदीदा',
@@ -1822,7 +1812,6 @@ const translations = {
     'settings.privacy': 'गोपनीयता',
     'settings.security': 'सुरक्षा',
     'settings.darkmode': 'डार्क मोड',
-    'settings.notifications': 'सूचनाएं',
     'settings.language': 'भाषा',
     'settings.help': 'सहायता केंद्र',
     'settings.about': 'हमारे बारे में',
@@ -1892,8 +1881,7 @@ function closeChatSearch(el) {
   getMessages().then(msgs => renderChatMessages(msgs));
 }
 
-function setupTwoFA() { showToast('2FA setup is not available in development mode'); }
-function disableTwoFA() { showToast('2FA is not available in development mode'); }
+
 
 // ====== INIT ======
 // fallback: force hide loading screen after 5s no matter what

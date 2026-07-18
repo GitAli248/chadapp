@@ -169,10 +169,6 @@
             <div class="menu-item-icon"><i class="fas fa-cog"></i></div>
             <span data-i18n="menu.settings">Settings</span>
           </div>
-          <div class="menu-item" onclick="navigateTo('screen-notifications')">
-            <div class="menu-item-icon"><i class="fas fa-bell"></i></div>
-            <span data-i18n="menu.notifications">Notifications</span>
-          </div>
         </div>
         <div class="menu-footer">
           <p data-i18n="menu.footer">Stay connected with your loved ones. Chat anytime, anywhere with Chadapp.</p>
@@ -470,13 +466,6 @@
               <div class="toggle-knob"></div>
             </div>
           </div>
-          <div class="settings-item" onclick="navigateTo('screen-notifications')">
-            <div class="settings-item-left">
-              <i class="fas fa-bell"></i>
-              <span data-i18n="settings.notifications">Notifications</span>
-            </div>
-            <i class="fas fa-chevron-right"></i>
-          </div>
           <div class="settings-item" onclick="navigateTo('screen-language')">
             <div class="settings-item-left">
               <i class="fas fa-globe"></i>
@@ -509,53 +498,6 @@
         <button class="btn-logout" onclick="handleLogout()">
           <i class="fas fa-sign-out-alt"></i> <span data-i18n="settings.logout">Log Out</span>
         </button>
-      </div>
-      <div class="bottom-nav">
-        <div class="nav-item" onclick="navigateTo('screen-menu')"><i class="fas fa-home"></i><span data-i18n="nav.home">Home</span></div>
-        <div class="nav-item" onclick="navigateTo('screen-favorites')"><i class="fas fa-heart"></i><span data-i18n="nav.favorite">Favorite</span></div>
-        <div class="nav-item" onclick="navigateTo('screen-conversations')"><i class="fas fa-comment"></i><span data-i18n="nav.chats">Chats</span></div>
-
-        <div class="nav-item" onclick="navigateTo('screen-profile')"><i class="fas fa-user"></i><span data-i18n="nav.profile">Profile</span></div>
-      </div>
-    </div>
-
-    <!-- SCREEN 10: Notifications -->
-    <div class="screen" id="screen-notifications">
-      <div class="settings-header">
-        <i class="fas fa-arrow-left" onclick="navigateTo('screen-settings')"></i>
-        <h2>NOTIFICATIONS</h2>
-      </div>
-      <div class="settings-content">
-        <div class="settings-section">
-          <h4 class="settings-section-title">Message Notifications</h4>
-          <div class="settings-item" onclick="toggleSwitch(this)">
-            <div class="settings-item-left">
-              <i class="fas fa-comment"></i>
-              <span>Message Alerts</span>
-            </div>
-            <div class="toggle-switch active">
-              <div class="toggle-knob"></div>
-            </div>
-          </div>
-          <div class="settings-item" onclick="toggleSwitch(this)">
-            <div class="settings-item-left">
-              <i class="fas fa-volume-up"></i>
-              <span>Sound</span>
-            </div>
-            <div class="toggle-switch active">
-              <div class="toggle-knob"></div>
-            </div>
-          </div>
-          <div class="settings-item" onclick="toggleSwitch(this)">
-            <div class="settings-item-left">
-              <i class="fas fa-mobile-alt"></i>
-              <span>Vibration</span>
-            </div>
-            <div class="toggle-switch">
-              <div class="toggle-knob"></div>
-            </div>
-          </div>
-        </div>
       </div>
       <div class="bottom-nav">
         <div class="nav-item" onclick="navigateTo('screen-menu')"><i class="fas fa-home"></i><span data-i18n="nav.home">Home</span></div>
@@ -771,16 +713,6 @@
         <div class="settings-section">
           <h4 class="settings-section-title">Login Security</h4>
 
-          <div class="settings-item" onclick="navigateTo('screen-two-factor')">
-            <div class="settings-item-left">
-              <i class="fas fa-user-shield"></i>
-              <span>Two-Factor Authentication</span>
-            </div>
-            <div class="settings-item-right">
-              <span class="settings-value" id="twoFactorStatus">Off</span>
-              <i class="fas fa-chevron-right"></i>
-            </div>
-          </div>
         </div>
         <div class="settings-section">
           <h4 class="settings-section-title">Encryption</h4>
@@ -869,46 +801,6 @@
           </div>
           <button class="btn-primary" onclick="changePassword()">UPDATE PASSWORD</button>
         </div>
-      </div>
-    </div>
-
-    <!-- SCREEN 15.2: Two-Factor Authentication -->
-    <div class="screen" id="screen-two-factor">
-      <div class="settings-header">
-        <i class="fas fa-arrow-left" onclick="navigateTo('screen-security')"></i>
-        <h2>TWO-FACTOR AUTH</h2>
-      </div>
-      <div class="settings-content">
-        <div class="twofa-status">
-          <i class="fas fa-shield-alt twofa-icon" id="twofaStatusIcon"></i>
-          <p class="twofa-desc" id="twofaDesc">Two-factor authentication adds an extra layer of security to your account.</p>
-        </div>
-        <div class="settings-section">
-          <h4 class="settings-section-title">Setup Method</h4>
-          <div class="twofa-method" onclick="setupTwoFA('app')">
-            <div class="twofa-method-left">
-              <i class="fas fa-mobile-alt"></i>
-              <div>
-                <span>Authenticator App</span>
-                <p>Use Google Authenticator, Authy, or similar</p>
-              </div>
-            </div>
-            <i class="fas fa-chevron-right"></i>
-          </div>
-          <div class="twofa-method" onclick="setupTwoFA('sms')">
-            <div class="twofa-method-left">
-              <i class="fas fa-comment-dots"></i>
-              <div>
-                <span>SMS Code</span>
-                <p>Receive codes via text message</p>
-              </div>
-            </div>
-            <i class="fas fa-chevron-right"></i>
-          </div>
-        </div>
-        <button class="btn-logout" style="border-color:var(--accent);color:var(--accent);" onclick="disableTwoFA()">
-          <i class="fas fa-toggle-off"></i> Disable 2FA
-        </button>
       </div>
     </div>
 
