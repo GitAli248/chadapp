@@ -614,6 +614,7 @@ function renderChatMessages(msgs) {
 function renderMessageBubble(msg) {
   const div = document.createElement('div');
   div.className = 'message ' + (msg.fromMe ? 'sent' : 'received');
+  if (msg.id) div.dataset.msgId = msg.id;
   const bubble = document.createElement('div');
   bubble.className = 'message-bubble';
 
@@ -1117,12 +1118,10 @@ async function sendForward() {
 async function deleteMessage() {
   if (!activeContextTarget) return;
   const target = activeContextTarget;
-  const msgs = await getMessages();
-  const msgIndex = Array.from(document.querySelectorAll('.chat-messages .message')).indexOf(target);
-  const msg = msgs[msgIndex];
-  if (msg?.id) {
+  const msgId = target.dataset.msgId;
+  if (msgId) {
     try {
-      await sb.from('messages').delete().eq('id', msg.id);
+      await sb.from('messages').delete().eq('id', msgId);
     } catch (e) {}
   }
   target.style.opacity = '0.3';
